@@ -1,0 +1,287 @@
+﻿
+@{
+    ViewBag.Title = "Consultar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow mb-4">
+
+    <div class="card-body">
+        <div class="form-row align-items-end">
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="message-text" class="col-form-label">Estado Prestamo:</label>
+                    <select class="form-control" id="cboestadoprestamo"></select>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="message-text" class="col-form-label">Lectores:</label>
+                    <select class="form-control" id="cbolectores"></select>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="form-group">
+                    <button id="btnbuscar" class="btn btn-primary btn-block">Buscar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="card shadow">
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="tabla" style="width:100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Estado Prestamo</th>
+                                <th>Codigo Lector</th>
+                                <th>Nombre Lector</th>
+                                <th>Titulo Libro</th>
+                                <th>Fecha Devolucion</th>
+                                <th>Fecha Devolucion Confirmado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th>Estado Prestamo</th>
+                                <th>Codigo Lector</th>
+                                <th>Nombre Lector</th>
+                                <th>Titulo Libro</th>
+                                <th>Fecha Devolucion</th>
+                                <th>Fecha Devolucion Confirmado</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="devolvermodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Devolucion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="message-text" class="col-form-label">Estado del libro entregado:</label>
+                    <textarea class="form-control" id="txtestadolibro" disabled="disabled"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="message-text" class="col-form-label">Estado del libro recibido:</label>
+                    <textarea class="form-control" id="txtestadolibrorecibido"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Volver</button>
+                <button type="button" class="btn btn-primary" id="btnGuardar">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="detallemodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Detalle Devolucion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="message-text" class="col-form-label">Estado del libro entregado:</label>
+                    <textarea class="form-control" id="txtviewestadolibroentregado" disabled="disabled"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="message-text" class="col-form-label">Estado del libro recibido:</label>
+                    <textarea class="form-control" id="txtviewestadolibrorecibido" disabled></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+        var tabladata;
+
+        $(document).ready(function () {
+
+            jQuery.ajax({
+                url: '@Url.Action("ListarPersona", "Biblioteca")',
+                type: "GET",
+                data: null,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.data != null) {
+                        $("<option>").attr({ "value": "0"}).text("-- Seleccionar Todos --").appendTo("#cbolectores");
+                        $.each(data.data, function (index, value) {
+                            if (value.oTipoPersona.IdTipoPersona == 3) {
+                                $("<option>").attr({ "value": value.IdPersona }).text(value.Codigo).appendTo("#cbolectores");
+                            }
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+
+            jQuery.ajax({
+                url: '@Url.Action("ListarEstados", "Prestamo")',
+                type: "GET",
+                data: null,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.data != null) {
+                        $("<option>").attr({ "value": "0" }).text("-- Seleccionar Todos --").appendTo("#cboestadoprestamo");
+                        $.each(data.data, function (index, value) {
+                            $("<option>").attr({ "value": value.IdEstadoPrestamo }).text(value.Descripcion).appendTo("#cboestadoprestamo");
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+
+
+            tabladata = $('#tabla').DataTable({
+                responsive:true,
+                "ajax": {
+                    "url": '@Url.Action("Listar", "Prestamo")' + "?idestadoprestamo=-1&idpersona=-1",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    {
+                        "data": "oEstadoPrestamo", render: function (data) {
+                            if (data.IdEstadoPrestamo != 1) {
+                                return '<span class="badge badge-success p-2">' + data.Descripcion + '</span>'
+                            } else {
+                                return '<span class="badge badge-danger p-2">' + data.Descripcion + '</span>'
+                            }
+                        },
+                        "width": "120px"
+                    },
+                    {
+                        "data": "oPersona", render: function (data) {
+                            return data.Codigo
+                        }
+                    },
+                    {
+                        "data": "oPersona", render: function (data) {
+                            return data.Nombre + " " + data.Apellido
+                        }
+                    },
+                    {
+                        "data": "oLibro", render: function (data) {
+                            return data.Titulo
+                        }
+                    },
+                    { "data": "TextoFechaDevolucion" },
+                    { "data": "TextoFechaConfirmacionDevolucion" },
+                    {
+                        "data": "IdPrestamo", "render": function (data, type, row, meta) {
+                            if (row.oEstadoPrestamo.IdEstadoPrestamo != 1) {
+                                return $("<button>").addClass("btn btn-info btn-detalle btn-sm").append(
+                                    $("<i>").addClass("far fa-eye")
+                                ).attr({ "data-informacion": JSON.stringify(row) })[0].outerHTML
+                            } else {
+                                return $("<button>").addClass("btn btn-primary btn-devolver btn-sm").append(
+                                    $("<i>").addClass("fas fa-undo-alt")
+                                ).attr({ "data-informacion": JSON.stringify(row) })[0].outerHTML
+                            }
+
+
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "90px"
+                    }
+
+                ],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+                }
+            });
+        })
+
+        $("#btnbuscar").on("click", function () {
+            tabladata.ajax.url('@Url.Action("Listar", "Prestamo")' + "?idestadoprestamo=" + $("#cboestadoprestamo").val() + "&idpersona=" + $("#cbolectores").val()).load();
+        })
+
+
+        $(document).on('click', '.btn-devolver', function (event) {
+            var json = $(this).data("informacion")
+
+            $("#txtestadolibro").val(json.EstadoEntregado);
+            $("#btnGuardar").data("idprestamo", json.IdPrestamo);
+
+            $("#devolvermodal").modal("show");
+
+
+        });
+
+        $(document).on('click', '.btn-detalle', function (event) {
+            var json = $(this).data("informacion")
+
+            $("#txtviewestadolibroentregado").val(json.EstadoEntregado);
+            $("#txtviewestadolibrorecibido").val(json.EstadoRecibido);
+
+            $("#detallemodal").modal("show");
+        });
+
+        $("#btnGuardar").on("click", function () {
+            var _idprestamo = $(this).data("idprestamo");
+
+            jQuery.ajax({
+                url: '@Url.Action("Devolver", "Prestamo")',
+                type: "POST",
+                data: JSON.stringify({ estadorecibido: $("#txtestadolibrorecibido").val() , idprestamo : _idprestamo }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.resultado) {
+                        tabladata.ajax.reload();
+                        swal("Listo", "Se registro la devolución", "success");
+                        $("#devolvermodal").modal("hide");
+                    } else {
+                        swal("Lo sentimos", "No se pudo registro la devolución", "warning");
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+        })
+
+
+
+
+    </script>
+}
+

@@ -1,0 +1,189 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+</div>
+<!-- Content Row -->
+<div class="row">
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Libros
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="div_libros">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-book fa-2x text-black-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Cantidad Lectores
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="div_lectores">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-black-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Prestamos Registrados
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="div_prestamos">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-black-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Pending Requests Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Prestamos Pendientes
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="div_pendientes">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-list-ol fa-2x text-black-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script>
+
+        $(document).ready(function () {
+
+            jQuery.ajax({
+                url: '@Url.Action("ListarLibro", "Biblioteca")',
+                type: "GET",
+                data: null,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+
+                    if (data.data != null) {
+                        $("#div_libros").text(data.data.length)
+
+                    } else {
+                        $("#div_libros").text("0");
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                },
+                beforeSend: function () {
+
+                },
+            });
+
+            jQuery.ajax({
+                url: '@Url.Action("ListarPersona", "Biblioteca")',
+                type: "GET",
+                data: null,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.data != null) {
+                        var a = data.data.filter(item => item.oTipoPersona.IdTipoPersona == 3)
+                        $("#div_lectores").text(a.length)
+
+                    } else {
+                        $("#div_lectores").text("0");
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                },
+                beforeSend: function () {
+
+                },
+            });
+
+            jQuery.ajax({
+                url: '@Url.Action("Listar", "Prestamo")' + "?idestadoprestamo=0&idpersona=0",
+                type: "GET",
+                data: null,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+
+                    if (data.data != null) {
+                        $("#div_prestamos").text(data.data.length)
+
+                    } else {
+                        $("#div_prestamos").text("0");
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                },
+                beforeSend: function () {
+
+                },
+            });
+
+            jQuery.ajax({
+                url: '@Url.Action("Listar", "Prestamo")' + "?idestadoprestamo=0&idpersona=0",
+                type: "GET",
+                data: null,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+
+                    if (data.data != null) {
+                        var a = data.data.filter(item => item.oEstadoPrestamo.IdEstadoPrestamo == 1)
+                        $("#div_pendientes").text(a.length)
+
+                    } else {
+                        $("#div_pendientes").text("0");
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                },
+                beforeSend: function () {
+
+                },
+            });
+
+        })
+
+
+</script>
+}

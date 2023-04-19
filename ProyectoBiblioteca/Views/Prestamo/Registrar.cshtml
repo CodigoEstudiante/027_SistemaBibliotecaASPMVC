@@ -1,0 +1,386 @@
+﻿
+@{
+    ViewBag.Title = "Registrar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    table.dataTable tbody td {
+        padding: 5px !important;
+    }
+</style>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 bg-primary">
+        <h6 class="m-0 font-weight-bold text-white">Registrar Préstamo</h6>
+    </div>
+    <div class="card-body">
+
+        <div class="row">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Detalle del Lector</h5>
+                        <div class="row">
+                            <div class="col-12">
+
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Código:</span>
+                                    </div>
+                                    <input type="hidden" id="hdidlector" value="0" />
+                                    <input type="text" class="form-control" style="background-color: #F9F9F9" disabled="disabled" id="txtcodigopersona">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-secondary" id="btnbuscarlector" type="button">Buscar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Nombres:</span>
+                                    </div>
+                                    <input type="text" class="form-control" disabled="disabled" style="background-color: #F9F9F9" id="txtnombrespersona">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card">
+
+                    <div class="card-body">
+                        <h5 class="card-title">Detalle del Prestamo</h5>
+                        <div class="row">
+                            <div class="col-12">
+
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Libro:</span>
+                                    </div>
+                                    <input type="hidden" id="hdidlibro" value="0" />
+                                    <input type="text" class="form-control" disabled="disabled" style="background-color: #F9F9F9" id="txttitulolibro">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-secondary" id="btnbuscarlibro" type="button">Buscar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Fecha Devolucion:</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="txtfechadevolucion">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <button id="btnregistrar" class="btn btn-success w-25">Registrar</button>
+                <button class="btn btn-danger w-25 ml-4" disabled id="btncancelarregistro">Cancelar</button>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="registromodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Terminar Registro</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="message-text" class="col-form-label">Estado del libro:</label>
+                    <textarea class="form-control" id="txtestadolibro"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Volver</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarRegistro">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="lectoresmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Lista de Lectores</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="tablalector" style="width:100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Codigo</th>
+                                        <th>Nombre</th>
+                                        <th>Apellido</th>
+                                        <th>Correo</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+         </div>
+    </div>
+</div>
+
+<div id="librosmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Lista de Libros</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="tablalibros" style="width:100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Titulo</th>
+                                        <th>Autor</th>
+                                        <th>Categoria</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+   <script>
+
+       var tablalector;
+       var tablalibro;
+       $(document).ready(function () {
+
+           tablalector = $('#tablalector').DataTable({
+                responsive:true,
+                "ajax": {
+                    "url": '@Url.Action("ListarPersona", "Biblioteca")',
+                    "type": "GET",
+                    "datatype": "json",
+                    "dataSrc": function (json) {
+
+                        return json.data.filter(function (item) {
+                            return item.oTipoPersona.IdTipoPersona == 3;
+                        });
+                    }
+                },
+               "columns": [
+                    {
+                        "data": "IdPersona", "render": function (data, type, row, meta) {
+                    
+                            return $("<button>").addClass("btn btn-primary btn-select-lector btn-sm").append(
+                                $("<i>").addClass("fas fa-check")
+                            ).attr({ "data-informacion": JSON.stringify(row) })[0].outerHTML
+                    
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "90px"
+                    },
+                    { "data": "Codigo" },
+                    { "data": "Nombre" },
+                    { "data": "Apellido" },
+                    { "data": "Correo" }
+                ],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+                }
+           });
+
+           tablalibro = $('#tablalibros').DataTable({
+                responsive:true,
+                "ajax": {
+                    "url": '@Url.Action("ListarLibro", "Biblioteca")',
+                    "type": "GET",
+                    "datatype": "json"
+                },
+               "columns": [
+                    {
+                        "data": "IdLibro", "render": function (data, type, row, meta) {
+                    
+                            return $("<button>").addClass("btn btn-primary btn-select-libro btn-sm").append(
+                                $("<i>").addClass("fas fa-check")
+                            ).attr({ "data-informacion": JSON.stringify(row) })[0].outerHTML
+                    
+                        },
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "90px"
+                    },
+                    { "data": "Titulo" },
+                    {
+                        "data": "oAutor", render: function (data) {
+                            return data.Descripcion
+                        }
+                    },
+                    {
+                        "data": "oCategoria", render: function (data) {
+                            return data.Descripcion
+                        }
+                    }
+                ],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
+                }
+            });
+
+
+
+
+           $.datepicker.regional['es'] = {
+               closeText: 'Cerrar',
+               monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio','Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+               monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',  'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+               dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+               dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié;', 'Juv', 'Vie', 'Sáb'],
+               dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá'],
+               weekHeader: 'Sm',
+               dateFormat: 'dd/mm/yy',
+               firstDay: 1,
+               isRTL: false,
+               showMonthAfterYear: false,
+               yearSuffix: ''
+           };
+           $.datepicker.setDefaults($.datepicker.regional['es']);
+
+
+           $("#txtfechadevolucion").datepicker({
+               minDate: new Date()
+           });
+       })
+       
+       
+       $("#btnregistrar").on("click", function () {
+           $("#txtestadolibro").val("");
+           $("#registromodal").modal("show")
+       })
+
+       $("#btnGuardarRegistro").on("click", function () {
+
+           var request = {
+               objeto: {
+                   oEstadoPrestamo: { IdEstadoPrestamo: 1 },
+                   oPersona: { IdPersona: $("#hdidlector").val() },
+                   oLibro: { IdLibro: $("#hdidlibro").val() },
+                   TextoFechaDevolucion: $("#txtfechadevolucion").val(),
+                   EstadoEntregado: $("#txtestadolibro").val()
+               }
+           };
+
+           jQuery.ajax({
+                url: '@Url.Action("GuardarPrestamos", "Prestamo")',
+                type: "POST",
+                data: JSON.stringify(request),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+
+                    if (data.resultado) {
+                        limpiarTodo();
+                        $("#registromodal").modal("hide")
+                        swal("Listo", data.mensaje, "success");
+                    } else {
+                        swal("Lo sentimos", data.mensaje, "warning");
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+
+           
+       })
+
+       $("#btnbuscarlector").on("click", function () {
+           tablalector.ajax.reload();
+           $("#lectoresmodal").modal("show")
+       })
+       $("#btnbuscarlibro").on("click", function () {
+           tablalibro.ajax.reload();
+           $("#librosmodal").modal("show")
+       })
+
+       
+
+       $(document).on('click', '.btn-select-lector', function (event) {
+           var json = $(this).data("informacion")
+           $("#hdidlector").val(json.IdPersona)
+           $("#txtcodigopersona").val(json.Codigo)
+           $("#txtnombrespersona").val(json.Nombre + ' ' + json.Apellido)
+           $("#lectoresmodal").modal("hide")
+
+           $("#btncancelarregistro").prop("disabled",false)
+       });
+
+       $(document).on('click', '.btn-select-libro', function (event) {
+           var json = $(this).data("informacion")
+           $("#hdidlibro").val(json.IdLibro)
+           $("#txttitulolibro").val(json.Titulo)
+           $("#librosmodal").modal("hide")
+
+           $("#btncancelarregistro").prop("disabled", false)
+       });
+
+       $("#btncancelarregistro").on("click", function () {
+           limpiarTodo();
+       })
+
+       function limpiarTodo() {
+           $("#hdidlector").val("0")
+           $("#txtcodigopersona").val("")
+           $("#txtnombrespersona").val("")
+
+           $("#hdidlibro").val("0")
+           $("#txttitulolibro").val("")
+
+           $("#txtfechadevolucion").val("")
+
+           $("#btncancelarregistro").prop("disabled", true)
+
+       }
+    </script>
+
+
+}
